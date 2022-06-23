@@ -1,5 +1,6 @@
 import express from "express";
 import bodyParser from "body-parser";
+import cors from "cors";
 
 import sqlite3 from "sqlite3";
 import { open } from "sqlite";
@@ -23,6 +24,7 @@ const dbPromise = open({
 
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
+app.use(cors());
 
 console.log(__dirname);
 
