@@ -34,23 +34,34 @@ app.use(express.static(path.join(__dirname, "/client/build")));
 app.post("/api/get_flights", async (req, res) => {
   const searchDestination = req.body.inputDestination;
   const searchDate = req.body.inputDate;
-  
+
   console.log(searchDestination);
   console.log(searchDate);
 
   const db = await dbPromise;
+
+  if (searchDestination === "all" && searchDate === "all") {
+    const departures_by_search = await db.all(`SELECT * FROM departures`);
+    res.send(departures_by_search);
+  }
 
   if (searchDate != "-undefined-undefined" && searchDestination != "default") {
     const departures_by_search = await db.all(
       `SELECT * FROM departures WHERE DATE(departure_date)='${searchDate}' AND destination='${searchDestination}'`
     );
     res.send(departures_by_search);
-  } else if (searchDate != "-undefined-undefined" && searchDestination == "default") {
+  } else if (
+    searchDate != "-undefined-undefined" &&
+    searchDestination == "default"
+  ) {
     const departures_by_search = await db.all(
       `SELECT * FROM departures WHERE DATE(departure_date)='${searchDate}'`
     );
     res.send(departures_by_search);
-  } else if (searchDate == "-undefined-undefined" && searchDestination != "default") {
+  } else if (
+    searchDate == "-undefined-undefined" &&
+    searchDestination != "default"
+  ) {
     const departures_by_search = await db.all(
       `SELECT * FROM departures WHERE destination='${searchDestination}'`
     );
@@ -240,7 +251,8 @@ app.post("/api/get_flight/:id", async (req, res) => {
 });
 
 // Admin API stuff
-app.post("/api/admin/edit_flight/:flight_id", async (req, res) => { // NEEDS WORK
+app.post("/api/admin/edit_flight/:flight_id", async (req, res) => {
+  // NEEDS WORK
   // Param ID from HTTP request
   const idFlightParam = req.params.flight_id;
   const newFlightPlaneName = req.body.newFlightPlaneName;
@@ -249,7 +261,7 @@ app.post("/api/admin/edit_flight/:flight_id", async (req, res) => { // NEEDS WOR
   const newFlightDestination = req.body.newFlightDestination;
   const newFlightPrice = req.body.newFlightPrice;
   const newFlightNumberSeats = req.body.newFlightNumberSeats;
-  const newFlightOrigin = req.body.newFlightOrigin;; // TODO 
+  const newFlightOrigin = req.body.newFlightOrigin; // TODO
 
   const db = await dbPromise;
 
